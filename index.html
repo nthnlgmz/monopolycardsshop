@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Input Field with Rounded Corners</title>
+  <!-- Include Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    /* Centering the parent div */
+    .center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      /* Set height to viewport height */
+    }
+
+    /* Increase size of the 'x' button */
+    .close-button {
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-200 p-4">
+  <div class="center">
+    <div class="max-w-md">
+      <label for="input" class="block text-sm font-medium text-gray-700">Search Monopoly Cards you want to buy!</label>
+      <div class="flex">
+        <input id="input" type="text" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-lg rounded-md pl-4" placeholder="   Search cards...">
+        <img id="buyIcon" src="https://github.com/nthnlgmz/imgs/assets/143614589/460a1033-8e53-4428-89eb-7a0dc63ca81d" alt="Buy" class="ml-2 h-8 w-8 rounded-full cursor-pointer">
+      </div>
+      <div id="cardContainer" class="mt-4"></div>
+      <button id="buyNowButton" class="bg-indigo-500 text-white px-4 py-2 rounded-md mt-4 hidden">Buy Now</button>
+    </div>
+  </div>
+
+  <script>
+    const buyIcon = document.getElementById('buyIcon');
+    const cardContainer = document.getElementById('cardContainer');
+    const buyNowButton = document.getElementById('buyNowButton');
+    // Array to temporarily store selected cards
+    let selectedCards = [];
+    // Counter to keep track of the number of times the icon has been clicked
+    let clickCounter = 0;
+    // Sample card data
+    const cardData = [{
+        cardname: "Spot Rebel",
+        imgUrl: "https://cdn.buymmog.com/1704602946357_spot_rebel.jpg",
+        stars: 5,
+        price: "$15",
+        quantity: 1
+      },
+      {
+        cardname: "Rad Railroads",
+        imgUrl: "https://cdn.buymmog.com/1704602303942_5450e44a92f9b1a4d7a7fdf38dd30d7.jpg",
+        stars: 5,
+        price: "$10",
+        quantity: 1
+      },
+      {
+        cardname: "Locomotion",
+        imgUrl: "https://cdn.buymmog.com/1704602990948_locomotion.jpg",
+        stars: 5,
+        price: "$10",
+        quantity: 1
+      },
+      {
+        cardname: "Wonder-fur!",
+        imgUrl: "https://cdn.buymmog.com/1704602150651_d57c4f555a938fb67d5aa22f142b254.jpg",
+        stars: 5,
+        price: "$10",
+        quantity: 1
+      },
+      {
+        cardname: "Soul Mates",
+        imgUrl: "https://cdn.buymmog.com/1704602402902_Soul%20Mates.jpg",
+        stars: 5,
+        price: "$10",
+        quantity: 1
+      },
+      {
+        cardname: "Cha-ching!",
+        imgUrl: "https://cdn.buymmog.com/1704602859109_Cha-Ching!.jpg",
+        stars: 5,
+        price: "$10",
+        quantity: 1
+      },
+      {
+        cardname: "Big Dog!",
+        imgUrl: "https://cdn.buymmog.com/1704603068936_big-dog.jpg",
+        stars: 5,
+        price: "$10",
+        quantity: 1
+      },
+      {
+        cardname: "The Doghouse",
+        imgUrl: "https://cdn.buymmog.com/1704602170305_cec5580f268bf9ca0a2ed1d0739811f.jpg",
+        stars: 5,
+        price: "$10",
+        quantity: 1
+      },
+      {
+        cardname: "On The Rise",
+        imgUrl: "https://cdn.buymmog.com/1704603020836_On%20the%20Rise.jpg",
+        stars: 5,
+        price: "$10",
+        quantity: 1
+      },
+      {
+        cardname: "Good News",
+        imgUrl: "https://cdn.buymmog.com/1704602268046_87866eb53f0a3dc40cd8a20246d48a4.jpg",
+        stars: 5,
+        price: "$10",
+        quantity: 1
+      },
+      {
+        cardname: "Special Speech",
+        imgUrl: "https://cdn.buymmog.com/1704602522641_special-speech.jpg",
+        stars: 5,
+        price: "$10",
+        quantity: 1
+      },
+      {
+        cardname: "Rich List",
+        imgUrl: "https://cdn.buymmog.com/1704602319962_2926dd2ae315e68953a3de883e4adb6.jpg",
+        stars: 5,
+        price: "$10",
+        quantity: 1
+      },
+      {
+        cardname: "Behind the Scenes",
+        imgUrl: "https://cdn.buymmog.com/1704602595374_behind%20the%20scene.jpg",
+        stars: 5,
+        price: "$10",
+        quantity: 1
+      },
+      {
+        cardname: "Early Hits",
+        imgUrl: "https://cdn.buymmog.com/1704602250143_a0821d3c0476ab42010e3a127958414.jpg",
+        stars: 5,
+        price: "$10",
+        quantity: 1
+      },
+      {
+        cardname: "Mug-nificient",
+        imgUrl: "https://cdn.buymmog.com/1704602095370_e7716a357c615493ca10a5de0037192.jpg",
+        stars: 5,
+        price: "$10",
+        quantity: 1
+      },
+      {
+        cardname: "A Good Stretch",
+        imgUrl: "https://cdn.buymmog.com/1706512246846_a-good-stretch.jpg",
+        stars: 5,
+        price: "$13",
+        quantity: 1
+      },
+      {
+        cardname: "Slice of Life",
+        imgUrl: "https://cdn.buymmog.com/1706512270698_slice%20of%20life.jpg",
+        stars: 5,
+        price: "$13",
+        quantity: 1
+      },
+      {
+        cardname: "Round n Round",
+        imgUrl: "https://cdn.buymmog.com/1706254146414_1(7).jpg",
+        stars: 5,
+        price: "$13",
+        quantity: 1
+      },
+      {
+        cardname: "Almost Real",
+        imgUrl: "https://cdn.buymmog.com/1706514370821_almost%20real.jpg",
+        stars: 5,
+        price: "$13",
+        quantity: 1
+      },
+      {
+        cardname: "Mogul Simulator",
+        imgUrl: "https://cdn.buymmog.com/1706512258783_mogul-simulator.jpg",
+        stars: 5,
+        price: "$13",
+        quantity: 1
+      },
+      {
+        cardname: "Adulting",
+        imgUrl: "https://cdn.buymmog.com/1706514402122_f058eb6c8d0e33b8f1df3b77dafac78(1).jpg",
+        stars: 5,
+        price: "$13",
+        quantity: 1
+      },
+      {
+        cardname: "A Model Duck",
+        imgUrl: "https://cdn.buymmog.com/1706512321254_a-model-duck.jpg",
+        stars: 5,
+        price: "$13",
+        quantity: 1
+      },
+      {
+        cardname: "Dive n Dice",
+        imgUrl: "https://cdn.buymmog.com/1706512310008_dive-n-dice.jpg",
+        stars: 5,
+        price: "$13",
+        quantity: 1
+      },
+      {
+        cardname: "The Racecar",
+        imgUrl: "https://cdn.buymmog.com/1708249664227_s-l1600.jpg",
+        stars: 5,
+        price: "$13",
+        quantity: 1
+      },
+      {
+        cardname: "Flippin' Out",
+        imgUrl: "https://cdn.buymmog.com/1706514359397_flippin%20out.jpg",
+        stars: 5,
+        price: "$13",
+        quantity: 1
+      },
+      {
+        cardname: "Money Tree",
+        imgUrl: "https://cdn.buymmog.com/1706512338278_money-tree.jpg",
+        stars: 5,
+        price: "$13",
+        quantity: 1
+      },
+      {
+        cardname: "Loaded Branches",
+        imgUrl: "https://cdn.buymmog.com/1706512329153_loaded-branches.jpg",
+        stars: 5,
+        price: "$13",
+        quantity: 1
+      }
+    ];
+    buyIcon.addEventListener('click', function() {
+      // Increment click counter
+      clickCounter++;
+      // Clear previous cards if it's the first click
+      if (clickCounter === 1) {
+        cardContainer.innerHTML = '';
+        selectedCards = [];
+      }
+      // Get the user input
+      const userInput = document.getElementById('input').value.toLowerCase().trim();
+      // Filter card data based on user input
+      const filteredCards = cardData.filter(card => card.cardname.toLowerCase().includes(userInput));
+      // Loop through each filtered card data
+      filteredCards.forEach((data, index) => {
+        // Check if the card is already in the list
+        const alreadySelected = selectedCards.some(card => card.cardname === data.cardname);
+        if (!alreadySelected) {
+          // Create a card element
+          const card = document.createElement('div');
+          card.classList.add('bg-white', 'rounded-md', 'p-4', 'shadow-md', 'flex', 'items-center', 'mt-4', 'relative');
+          // Set inner HTML of the card
+          card.innerHTML = `
+            <img src="${data.imgUrl}" alt="Card Image" class="h-24 w-24 mr-4 rounded-md">
+            <div>
+              <h2 class="text-lg font-medium">${data.cardname}</h2>
+              <p class="text-gray-500">${data.price}</p>
+              <p>${'⭐'.repeat(data.stars)}</p>
+              <div class="flex items-center mt-2">
+                <span class="mr-2">Quantity:</span>
+                <button class="bg-gray-200 text-gray-700 px-2 py-1 rounded-md mr-2" onclick="decrementQuantity(${selectedCards.length})">-</button>
+                <span id="quantity${selectedCards.length}" class="mr-2">${data.quantity}</span>
+                <button class="bg-gray-200 text-gray-700 px-2 py-1 rounded-md" onclick="incrementQuantity(${selectedCards.length})">+</button>
+              </div>
+            </div>
+            <button class="absolute top-0 right-0 text-red-600 hover:text-red-800 p-2 close-button" onclick="removeCard(${selectedCards.length})">&times;</button>
+          `;
+          // Append card to the container
+          cardContainer.appendChild(card);
+          // Save the card temporarily
+          selectedCards.push({
+            ...data,
+            index
+          }); // Store index for easy removal
+        }
+      });
+      // Show the "Buy Now" button if there are filtered cards
+      buyNowButton.classList.toggle('hidden', selectedCards.length === 0);
+    });
+
+    function incrementQuantity(index) {
+      selectedCards[index].quantity++;
+      document.getElementById(`quantity${index}`).textContent = selectedCards[index].quantity;
+    }
+
+    function decrementQuantity(index) {
+      if (selectedCards[index].quantity > 1) {
+        selectedCards[index].quantity--;
+        document.getElementById(`quantity${index}`).textContent = selectedCards[index].quantity;
+      }
+    }
+
+    function removeCard(index) {
+      // Remove card from selectedCards array
+      selectedCards.splice(index, 1);
+      // Remove card from DOM
+      cardContainer.removeChild(cardContainer.childNodes[index]);
+      // Update Buy Now button visibility
+      buyNowButton.classList.toggle('hidden', selectedCards.length === 0);
+    }
+    buyNowButton.addEventListener('click', function() {
+      // Calculate total price
+      let totalPrice = 0;
+      selectedCards.forEach(data => {
+        totalPrice += parseFloat(data.price.replace('$', '')) * data.quantity;
+      });
+      // Redirect to PayPal with the total price
+      const paypalLink = `https://paypal.me/nthnlgmz/${totalPrice.toFixed(2)}usd`;
+      window.location.href = paypalLink;
+    });
+  </script>
+</body>
+
+</html>
