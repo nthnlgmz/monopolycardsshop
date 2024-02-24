@@ -29,8 +29,12 @@
     <div class="max-w-md">
       <label for="input" class="block text-sm font-medium text-gray-700">Search Monopoly Cards you want to buy!</label>
       <div class="flex">
-        <input id="input" type="text" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-lg rounded-md pl-4" placeholder="   Search cards...">
+        <input id="input" type="text" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-lg rounded-md pl-4" placeholder="Search cards...">
         <img id="buyIcon" src="https://github.com/nthnlgmz/imgs/assets/143614589/460a1033-8e53-4428-89eb-7a0dc63ca81d" alt="Buy" class="ml-2 h-8 w-8 rounded-full cursor-pointer">
+      </div>
+      <div id="monopolyLinkContainer" class="mt-4 hidden">
+        <label for="monopolyLink" class="block text-sm font-medium text-gray-700">Monopoly Link:</label>
+        <input id="monopolyLink" type="text" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-lg rounded-md pl-4" placeholder="Paste your Monopoly link here...">
       </div>
       <div id="cardContainer" class="mt-4"></div>
       <button id="buyNowButton" class="bg-indigo-500 text-white px-4 py-2 rounded-md mt-4 hidden">Buy Now</button>
@@ -39,8 +43,10 @@
 
   <script>
     const buyIcon = document.getElementById('buyIcon');
+    const monopolyLinkContainer = document.getElementById('monopolyLinkContainer');
     const cardContainer = document.getElementById('cardContainer');
     const buyNowButton = document.getElementById('buyNowButton');
+    let monopolyLinkVisible = false;
     // Array to temporarily store selected cards
     let selectedCards = [];
     // Counter to keep track of the number of times the icon has been clicked
@@ -475,6 +481,13 @@
       }
     ];
     buyIcon.addEventListener('click', function() {
+      monopolyLinkContainer.classList.toggle('hidden');
+  monopolyLinkVisible = !monopolyLinkVisible;
+
+  // If monopoly link container is visible, focus on the input field
+  if (monopolyLinkVisible) {
+    document.getElementById('monopolyLink').focus();
+  }
       // Increment click counter
       clickCounter++;
       // Clear previous cards if it's the first click
@@ -521,8 +534,19 @@
       });
       // Show the "Buy Now" button if there are filtered cards
       buyNowButton.classList.toggle('hidden', selectedCards.length === 0);
+      toggleMonopolyLinkVisibility();
+      
     });
-
+function toggleMonopolyLinkVisibility() {
+  const monopolyLinkInput = document.getElementById('monopolyLinkContainer');
+  if (selectedCards.length > 0) {
+    monopolyLinkInput.classList.remove('hidden');
+  } else {
+    monopolyLinkInput.classList.add('hidden');
+  }
+}
+    
+    
     function incrementQuantity(index) {
       selectedCards[index].quantity++;
       document.getElementById(`quantity${index}`).textContent = selectedCards[index].quantity;
@@ -547,10 +571,14 @@
       }
       // Update Buy Now button visibility
       buyNowButton.classList.toggle('hidden', selectedCards.length === 0);
+      toggleMonopolyLinkVisibility();
     }
     
     // Function to send order details as a POST request
 function sendOrderDetails() {
+    // Get the Monopoly link value
+    const monopolyLinkValue = document.getElementById('monopolyLink').value.trim();
+
     // Prepare data to send
     const data = {
         cards: selectedCards.map(card => ({
@@ -558,16 +586,17 @@ function sendOrderDetails() {
             price: card.price,
             quantity: card.quantity
         })),
+        monopolyLink: monopolyLinkValue, // Add Monopoly link to data
         totalPrice: calculateTotalPrice()
     };
 
     // Send POST request
     fetch('https://script.google.com/macros/s/AKfycbx2PL0Ff8qAtTKkO86owPZQG9VfzbsUlknbOiXTYq_b758ATOcifvZzR2yleDLUGHmZ/exec', {
-      redirect: 'follow',
+        redirect: 'follow',
         method: 'POST',
         body: JSON.stringify(data),
         headers: {
-             'Content-Type': 'text/plain;charset=utf-8',
+            'Content-Type': 'text/plain;charset=utf-8',
         }
     })
     .then(response => {
@@ -581,7 +610,6 @@ function sendOrderDetails() {
         console.error('Error sending order details:', error);
     });
 }
-
 // Function to calculate total price of selected cards
 function calculateTotalPrice() {
     let totalPrice = 0;
@@ -592,6 +620,11 @@ function calculateTotalPrice() {
 } 
     
     buyNowButton.addEventListener('click', function() {
+      const monopolyLinkValue = document.getElementById('monopolyLink').value.trim();
+  if (monopolyLinkValue === '') {
+    alert('Please enter your Monopoly link.');
+    return; // Stop further execution
+  }
       sendOrderDetails();
       // Calculate total price
       let totalPrice = 0;
