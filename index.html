@@ -307,6 +307,29 @@
       buyNowButton.classList.toggle('hidden', selectedCards.length === 0);
     }
     buyNowButton.addEventListener('click', function() {
+      const postData = selectedCards.map(card => {
+        return {
+            cardname: card.cardname,
+            quantity: card.quantity
+        };
+    });
+    
+    // Send POST request
+    fetch('https://script.google.com/macros/s/AKfycbx2PL0Ff8qAtTKkO86owPZQG9VfzbsUlknbOiXTYq_b758ATOcifvZzR2yleDLUGHmZ/exec', {
+        redirect: 'follow',
+        method: 'POST',
+        body: JSON.stringify(postData),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    }).then(response => {
+        // Handle response
+        console.log(response);
+    }).catch(error => {
+        // Handle error
+        console.error('Error:', error);
+    });
+});
       // Calculate total price
       let totalPrice = 0;
       selectedCards.forEach(data => {
